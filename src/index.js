@@ -2,10 +2,14 @@ require('./models/Visita')
 const express = require('express');
 const mongoose = require('mongoose');
 const visitaRoutes = require('./routes/visitaRoutes')
+const pageRoutes = require('./routes/pageRoutes')
+const path = require('path');
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname + 'public')));
 app.use(visitaRoutes);
+app.use(pageRoutes);
 
 const mongoUri = 'mongodb+srv://lucas:mongomongo@cluster0.7eomb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 mongoose.connect(mongoUri, {
@@ -19,7 +23,7 @@ mongoose.connection.on('connected', () => {
 })
 
 mongoose.connection.on('error', (err) => {
-    console.log('Error connecting to mongo', err)
+    console.log('Error connecting to mongo', err);
 })
 
 app.get('/', (req, res) => {

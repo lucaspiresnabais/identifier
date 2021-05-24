@@ -9,14 +9,15 @@ router.get('/:idVisita', async (req, res) => {
         const visita = await Visita.findById(idVisita)
         res.send(visita)
     } catch (err) {
-        res.status(422).send({error: "An error has occurred"});
         console.log(err)
+        res.status(422).send({error: "An error has occurred"});
     }
 })
 
 router.post('/addVisita', async (req, res) => {
 
-    const { idVisitador, idReceptor, diaHoraDesde, diaHoraHasta, estado } = req.body;
+    const { idVisitador, idReceptor, diaHoraDesde, diaHoraHasta } = req.body;
+    const estado = 'No habilitado';
    
     if (!req.body.idReceptor) {
         return res.status(400).send({error: 'idVisitador es obligatorio'});
@@ -26,8 +27,8 @@ router.post('/addVisita', async (req, res) => {
         return res.status(400).send({error: 'diaHoraDesde y diaHoraHasta son obligatorios'});
     }
     
-    if (!req.body.estado) {
-        return res.status(400).send({error: 'El estado es obligatorio'});
+    if (idVisitador) {
+        estado = 'Habilitado'
     }
 
     try {
@@ -36,17 +37,17 @@ router.post('/addVisita', async (req, res) => {
 
         res.send(`Se ha agregado la visita: ${visita}`)
     } catch (err) {
-        res.status(422).send({error: "An error has occurred"});
         console.log(err)
+        res.status(422).send({error: "An error has occurred"});
     }
 });
 
 router.patch('/addVisitador/:idVisita', async (req, res) => {
-    const { idVisitador, geo } = req.body;
+    const { idVisitador } = req.body;
     const { idVisita } = req.params
     
     if (!idVisitador) {
-        res.status(400).send({error: 'idVisitador es obligatorio'});
+       return res.status(400).send({error: 'idVisitador es obligatorio'});
     }
 
     try {
@@ -54,31 +55,55 @@ router.patch('/addVisitador/:idVisita', async (req, res) => {
 
 
         if (visita.idVisitador) {
-            res.status(400).send({error: 'La visita ya posee un visitador'})
+            return res.status(400).send({error: 'La visita ya posee un visitador'})
         }
 
         if (visita.estado != 'No habilitado') {
-            res.status(400).send({error: `La visita se encuentra en estado ${visita.estado}`})
+            return res.status(400).send({error: `La visita se encuentra en estado ${visita.estado}`})
         }
 
         visita.idVisitador = idVisitador;
-        visita.geo = geo;
         visita.estado = 'Habilitado';
         await visita.save()
         res.send(visita)
     } catch (err) {
-        res.status(422).send({error: "An error has occurred"});
         console.log(err)
+        res.status(422).send({error: "An error has occurred"});
     }
 })
 
-router.post('/validarVisita', (req, res) => {
-    
-    if(!req.body.idVisitador) {
+router.patch('/validateVisita/:idVisita', async (req, res) => {
+
+    const { idVisitador, geo } = req.body
+    const { idVisita } = req.params
+
+    if(!idVisitador) {
         return res.status(400).send({error: 'El idVisitador es obligatorio'});
     }
 
-    res.send(`Validada`);
+    try {
+        const visita = await Visita.findById(idVisita)
+        
+        if(!visita) {
+            return res.status(404).send({error: 'Visita no encontrada'})
+        }
+
+        if (!visita.idVisitador || visita.estado !== 'Habilitado') {
+            return res.status(422).send({error: 'La visita no está en estado "Habilitado" o no tiene idVisitador'})
+        }
+
+        if (visita.idVisitador != idVisitador) {
+            return res.status(400).send({error: 'El visitador no es el indicado!'})
+        }
+
+        visita.estado = "Ejecutado";
+        visita.geo = geo;
+        await visita.save();
+        res.send(visita);
+    }catch(err) {
+        console.log(err);
+        res.status(422).send({error: "An error has occurred"});
+    }
 })
 
 module.exports = router;
