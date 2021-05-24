@@ -14,6 +14,23 @@ router.get('/:idVisita', async (req, res) => {
     }
 })
 
+router.get('/link/:idVisita', async (req, res) => {
+    const { idVisita } = req.params;
+    try { 
+        const visita = await Visita.findById(idVisita)
+        
+        if (!visita) {
+            return res.status(400).send({error: "La visita no existe"})
+        }
+
+        res.send(`host/pages/scanner/${idVisita}`)
+    } catch (err) {
+        console.log(err)
+        res.status(422).send({error: "An error has occurred"});
+    }
+})
+
+
 router.post('/addVisita', async (req, res) => {
 
     const { idVisitador, idReceptor, diaHoraDesde, diaHoraHasta } = req.body;
