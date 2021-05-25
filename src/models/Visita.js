@@ -3,10 +3,25 @@ const mongoose = require('mongoose');
 
 const visitaSchema = new mongoose.Schema({
     idVisitador: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
     },
-    idReceptor: {
-        type: mongoose.Schema.Types.ObjectId,
+    mailVisitador: {
+        type: String,
+    },
+    tipoDni: {
+        type: String,
+    },
+    nroDni: {
+        type: String,
+    },
+    nombre: {
+        type: String,
+    },
+    mailReceptor: {
+        type: String,
+    },
+    whatsapp: {
+        type: String,
     },
     diaHoraDesde: {
         type: Number,
