@@ -10,14 +10,16 @@ const con_session = () => {
   sessionData = fs.readFileSync(session_path);
   sessionData = JSON.parse(sessionData);
   client = new Client({ session: sessionData });
-  console.log("toy casi ready");
+  console.log("Creando ciente Whatsapp");
 
   client.on("disconnected", () => {
-    console.log("me desconecte");
+    console.log(
+      "me desconecte del Wapp, seguramente lo estan usando en otro dispisitivo"
+    );
   });
 
   client.on("ready", () => {
-    console.log("ready!!");
+    console.log("Whats App ready!!");
     escucharMsg();
   });
 
@@ -31,16 +33,16 @@ const sin_session = () => {
     // Generate and scan this code with your phone
     console.log(qr);
     qrcode.generate(qr, {
-      samll: true,
+      small: true,
     });
   });
   client.on("ready", () => {
-    console.log("ready!!");
+    console.log("Whats App ready!!");
   });
   client.on("authenticated", (session) => {
     sessionData = session;
     fs.writeFile(session_path, JSON.stringify(session), (err) => {
-      if (err) console.log("error");
+      if (err) console.log("error en wapp autenthicated");
     });
   });
   client.initialize();
@@ -54,13 +56,19 @@ module.exports.iniciarWhatsappBot = () => {
 const escucharMsg = () => {
   client.on("message", (msg) => {
     const { from, to, body } = msg;
-    console.log(from, to, body);
-    enviarMsg(from, "Hola");
+    console.log(from, to, body, "El serv. no responde msg");
+    /*enviarMsg(from, "Hola");*/
   });
 };
 
-module.exports.enviarMsg = (to, message) => {
+module.exports.enviarMsgVisita = (to, message) => {
   console.log("********************", to, message);
+
   /* client.initialize(); */
   client.sendMessage(to, message);
+  if (message.mimetype == "image/jpg") {
+    qrcode.generate(message.filename, {
+      small: true,
+    });
+  }
 };

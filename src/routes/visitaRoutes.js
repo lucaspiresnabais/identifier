@@ -7,7 +7,7 @@ const router = express.Router();
 const mailManager = require("../helpers/mailManager");
 const qrManager = require("../helpers/qrManager");
 const dotenv = require("dotenv");
-const { enviarMsg } = require("../whatsappManager");
+const { enviarMsgVisita } = require("../whatsappManager");
 dotenv.config();
 /*router.use(corser.create()) */
 router.get("/:idVisita", async (req, res) => {
@@ -43,7 +43,6 @@ router.get("/:idVisita", async (req, res) => {
 })*/
 
 router.post("/addVisita", async (req, res) => {
-  console.log("paso por el post del index");
   const {
     idVisitador,
     mailVisitador,
@@ -93,17 +92,17 @@ router.post("/addVisita", async (req, res) => {
     let responseMessage = `Se ha agregado la visita: ${visita} 
             y envíado el mail al receptor`;
 
-    if (visita.idVisitador) {
-      const data = `${visita._id}${idVisitador}`;
-      const qrData = await qrManager.saveQR(data);
+    const data = `${visita._id}`;
+    const qrData = await qrManager.saveQR(data);
 
-      const imageName = qrData[0];
-      const whatsappMessage = qrData[1];
-      /* console.log('******', Date())
+    const imageName = qrData[0];
+    const whatsappMessage = qrData[1];
+    /* console.log('******', Date())
             console.log(whatsappMessage)
             console.log([qrData]) */
-      enviarMsg("5491155701153@c.us", whatsappMessage);
-      /*enviarMsg("5491149171652@c.us", whatsappMessage); */
+    enviarMsgVisita("5491155701153@c.us", whatsappMessage);
+    /*enviarMsg("5491149171652@c.us", whatsappMessage); */
+    if (visita.idVisitador) {
       if (visita.mailVisitador) {
         await mailManager.sendMail({ imageName }, mailVisitador);
         responseMessage = `Se ha agregado la visita: ${visita} 

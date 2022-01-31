@@ -13,7 +13,6 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname + "public")));
 app.use(visitaRoutes);
 app.use(pageRoutes);
-/* app.use(corser.create()); */
 
 /*const mongoUri = 'mongodb+srv://lucas:mongomongo@cluster0.7eomb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority' */
 const mongoUri = "mongodb://0.0.0.0:27017/pruebampn1";

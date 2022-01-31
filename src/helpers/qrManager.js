@@ -22,7 +22,7 @@ async function saveQR(dataToEncode) {
   const msgImg = new MessageMedia(
     "image/jpg",
     buffer.toString("base64"),
-    "pepe"
+    dataToEncode
   );
 
   return [outputFileName, msgImg];
