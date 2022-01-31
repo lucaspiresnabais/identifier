@@ -16,7 +16,8 @@ qrScanner.start()
 async function patchData(data) {
     const idVisita = data.split(':')[0];
     const idVisitador = data.split(':')[1];
-    const host = `https://5d864fbb3995.ngrok.io`
+    const host = `https://69b8-190-191-103-88.ngrok.io`
+ /*const host = `https://5d864fbb3995.ngrok.io`*/
     const url = `${host}/validateVisita/${idVisita}`
 
     const response = await fetch (url, {
@@ -27,4 +28,5 @@ async function patchData(data) {
         body: JSON.stringify({idVisitador})
     })
     console.log(await response.json())
+    document.body.innerHTML+= await response.json()
 }
