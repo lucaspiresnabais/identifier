@@ -1,30 +1,23 @@
 /*require('./models/Modelos')*/
-const express = require("express");
+const { app } = require("./app");
 const mongoose = require("mongoose");
-const visitaRoutes = require("./routes/visitaRoutes");
-const pageRoutes = require("./routes/pageRoutes");
-const path = require("path");
-const app = express();
+
+/*const app = express();*/
 const { iniciarWhatsappBot } = require("./whatsappManager");
 
 iniciarWhatsappBot();
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname + "public")));
-app.use(visitaRoutes);
-app.use(pageRoutes);
-
 /*const mongoUri = 'mongodb+srv://lucas:mongomongo@cluster0.7eomb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority' */
 const mongoUri = "mongodb://0.0.0.0:27017/pruebampn1";
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-});
-mongoose.connection.on("connected", () => {
-  console.log("Connected to mongo instance!");
-});
+mongoose
+  .connect(mongoUri, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
+  .then((db) => console.log("Connected to mongo instance!"))
+  .catch((error) => console.log("Error connecting to mongo", error));
 
 mongoose.connection.on("error", (err) => {
   console.log("Error connecting to mongo", err);

@@ -9,8 +9,9 @@ let sessionData;
 const con_session = () => {
   sessionData = fs.readFileSync(session_path);
   sessionData = JSON.parse(sessionData);
+  console.log(sessionData, "*****************************");
   client = new Client({ session: sessionData });
-  console.log("Creando ciente Whatsapp");
+  console.log("Creando cliente Whatsapp");
 
   client.on("disconnected", () => {
     console.log(

@@ -33,46 +33,51 @@ const visitaSchema = new mongoose.Schema({
   },
 });
 
-const parametria = new mongoose.Schema({
-  codEnte: {
-    type: Number,
+const parametria = new mongoose.Schema(
+  {
+    codEnte: {
+      type: Number,
+    },
+    codSector: {
+      type: Number,
+    },
+    codServicio: {
+      type: Number,
+    },
+    ente: {
+      type: String,
+    },
+    sector: {
+      type: String,
+    },
+    servicio: {
+      type: String,
+    },
+    envWapp: {
+      type: Boolean,
+      default: true,
+    },
+    envMail: {
+      type: Boolean,
+      default: true,
+    },
+    estadoServicio: {
+      type: String /*Habilidato,Suspendido, bloqueado*/,
+    },
+    textoWapp: {
+      type: String,
+    },
+    textoMail: {
+      type: String,
+    },
   },
-  codSector: {
-    type: Number,
-  },
-  codServicio: {
-    type: Number,
-  },
-  ente: {
-    type: String,
-  },
-  sector: {
-    type: String,
-  },
-  servicio: {
-    type: String,
-  },
-  envWapp: {
-    type: Boolean,
-    default: true,
-  },
-  envMail: {
-    type: Boolean,
-    default: true,
-  },
-  estadoServicio: {
-    type: String /*Habilidato,Suspendido, bloqueado*/,
-  },
-  textoWapp: {
-    type: String,
-  },
-  textoMail: {
-    type: String,
-  },
-  timeStamp: {
-    type: Date,
-  },
-});
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+  }
+);
 
 mongoose.model("Visita", visitaSchema);
 mongoose.model("Parametria", parametria);
