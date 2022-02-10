@@ -57,7 +57,7 @@ module.exports.iniciarWhatsappBot = () => {
 const escucharMsg = () => {
   client.on("message", (msg) => {
     const { from, to, body } = msg;
-    console.log(from, to, body, "El serv. no responde msg");
+    console.log(from, to, body, "El serv. no respondera este msg");
     /*enviarMsg(from, "Hola");*/
   });
 };

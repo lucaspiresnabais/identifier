@@ -1,49 +1,48 @@
 const mongoose = require("mongoose");
 
-const visitaSchema = new mongoose.Schema({
-  idVisitador: {
-    type: String,
-  },
-  mailVisitador: {
-    type: String,
-  },
-  tipoDni: {
-    type: String,
-  },
-  nroDni: {
-    type: String,
-  },
-  nombre: {
-    type: String,
-  },
-  mailReceptor: {
-    type: String,
-  },
-  whatsapp: {
-    type: String,
-  },
-  diaHoraDesde: {
-    type: Number,
-  },
-  diaHoraHasta: {
-    type: Number,
-  },
-  estado: {
-    type: String,
-  },
-});
-
-const parametria = new mongoose.Schema(
+const visitaSchema = new mongoose.Schema(
   {
-    codEnte: {
+    idVisitador: {
+      type: String,
+    },
+    mailVisitador: {
+      type: String,
+    },
+    tipoDoc: {
+      type: String,
+    },
+    nroDoc: {
+      type: String,
+    },
+    nombre: {
+      type: String,
+    },
+    mailReceptor: {
+      type: String,
+    },
+    whatsapp: {
+      type: String,
+    },
+    diaHoraDesde: {
       type: Number,
     },
-    codSector: {
+    diaHoraHasta: {
       type: Number,
     },
-    codServicio: {
-      type: Number,
+    estado: {
+      type: String,
     },
+  },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+  }
+);
+
+const entes = new mongoose.Schema(
+  {
     ente: {
       type: String,
     },
@@ -53,6 +52,23 @@ const parametria = new mongoose.Schema(
     servicio: {
       type: String,
     },
+  },
+  {
+    versionKey: false,
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+  }
+);
+
+const parametria = new mongoose.Schema(
+  {
+    entex: {
+      ref: "entes",
+      type: mongoose.Schema.Types.ObjectId,
+    },
+
     envWapp: {
       type: Boolean,
       default: true,
@@ -79,5 +95,43 @@ const parametria = new mongoose.Schema(
   }
 );
 
+const users = new mongoose.Schema(
+  {
+    user: { type: String, unique: true },
+    password: { type: String, require: true },
+
+    codEnte: {
+      ref: "Entes",
+      type: mongoose.Schema.Types.ObjectId,
+    },
+
+    codSector: {
+      type: Number,
+    },
+    codServicio: {
+      type: Number,
+    },
+    roles: [
+      {
+        ref: "Roles",
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
+  },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+  }
+);
+
+const roles = new mongoose.Schema({
+  rol: { type: String, unique: true },
+});
+
 mongoose.model("Visita", visitaSchema);
 mongoose.model("Parametria", parametria);
+mongoose.model("Users", users);
+mongoose.model("Entes", entes);
+mongoose.model("Roles", roles);

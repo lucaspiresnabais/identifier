@@ -5,6 +5,7 @@ const mailManager = require("../helpers/mailManager");
 const qrManager = require("../helpers/qrManager");
 const dotenv = require("dotenv");
 const { enviarMsgVisita } = require("../whatsappManager");
+const { validaautorizacion } = require("../helpers/database");
 dotenv.config();
 
 const getVisita = async (req, res) => {
@@ -30,7 +31,10 @@ const addVisita = async (req, res) => {
     diaHoraDesde,
     diaHoraHasta,
   } = req.body;
-  let estado = "No habilitado";
+
+  /* const valida = await validaautorizacion(user, password, ente);
+  if (valida == "OK") {
+   */ let estado = "Habilitado";
   const link = `${process.env.HOST}/pages/scanner`;
 
   if (!mailReceptor && !whatsapp) {
@@ -68,22 +72,19 @@ const addVisita = async (req, res) => {
     let responseMessage = `Se ha agregado la visita: ${visita} 
               y envíado el mail al receptor`;
 
-    const data = `${visita._id}`;
+    const data = `${visita._id}` + ":" + `${visita.idVisitador}`;
     const qrData = await qrManager.saveQR(data);
 
-    const imageName = qrData[0];
-    const whatsappMessage = qrData[1];
-    /* console.log('******', Date())
-              console.log(whatsappMessage)
-              console.log([qrData]) */
-    enviarMsgVisita("5491155701153@c.us", whatsappMessage);
-    /*enviarMsg("5491149171652@c.us", whatsappMessage); */
-    if (visita.idVisitador) {
-      if (visita.mailVisitador) {
-        await mailManager.sendMail({ imageName }, mailVisitador);
-        responseMessage = `Se ha agregado la visita: ${visita} 
-                  y se ha enviado el mail al receptor y visitador `;
-      }
+    let whatsappdestino = "";
+    whatsappdestino = whatsapp.slice(1);
+    if (whatsappdestino.length > 8) {
+      const ext = "@c.us";
+      whatsappdestino = whatsappdestino + ext;
+      const whatsappMessage = qrData[1];
+
+      enviarMsgVisita(whatsappdestino.toString(), whatsappMessage);
+
+      /*enviarMsgVisita("5491155701153-1587230635@g.us", whatsappMessage);*/
     }
 
     res.send(responseMessage);
@@ -92,11 +93,14 @@ const addVisita = async (req, res) => {
     res.status(422).send({ error: "An error has occurred" });
   }
 };
+/*}  else res.status(422).send({ error: valida });*/
 
 const validateVisita = async (req, res) => {
-  const { idVisitador, geo } = req.body;
-  const { idVisita } = req.params;
-
+  const { data } = req.body;
+  /* const { idVisita } = req.params; */
+  const idVisita = data.split(":")[0];
+  const idVisitador = data.split(":")[1];
+  console.log(idVisita, idVisitador);
   if (!idVisitador) {
     return res.status(400).send({ error: "El idVisitador es obligatorio" });
   }
@@ -110,9 +114,9 @@ const validateVisita = async (req, res) => {
       return res.status(404).send({ error: message });
     }
 
+    console.log(visita.idVisitador, visita.estado);
     if (!visita.idVisitador || visita.estado !== "Habilitado") {
-      const message = `La visita no está en estado 
-                  "Habilitado" o no tiene idVisitador`;
+      const message = `La visita no está en estado "Habilitado" o no tiene idVisitador`;
       console.log(message);
       return res.status(422).send({ error: message });
     }
@@ -124,9 +128,10 @@ const validateVisita = async (req, res) => {
     }
 
     visita.estado = "Ejecutado";
-    visita.geo = geo;
-    await visita.save();
+    /* visita.geo = geo; */
+    /* res.send(`<h1>Aprobada</h1> ${visita}`);*/
     res.send(visita);
+    await visita.save();
   } catch (err) {
     console.log(err);
     res.status(422).send({ error: "An error has occurred" });
