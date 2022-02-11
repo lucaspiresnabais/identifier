@@ -72,7 +72,9 @@ const addVisita = async (req, res) => {
     let responseMessage = `Se ha agregado la visita: ${visita} 
               y envíado el mail al receptor`;
 
-    const data = `${visita._id}` + ":" + `${visita.idVisitador}`;
+    /*    const data = `${visita._id}` + ":" + `${visita.idVisitador}`; */
+    const data = `${visita._id}`;
+
     const qrData = await qrManager.saveQR(data);
 
     let whatsappdestino = "";
@@ -94,7 +96,11 @@ const addVisita = async (req, res) => {
   }
 };
 /*}  else res.status(422).send({ error: valida });*/
+/* 
 
+   VALIDACION DE VISITA
+
+ */
 const validateVisita = async (req, res) => {
   const { data } = req.body;
   /* const { idVisita } = req.params; */
@@ -127,9 +133,8 @@ const validateVisita = async (req, res) => {
       return res.status(400).send({ error: message });
     }
 
-    visita.estado = "Ejecutado";
+    visita.estado = "Habilitado"; /* ara probar, luego: ejecutado */
     /* visita.geo = geo; */
-    /* res.send(`<h1>Aprobada</h1> ${visita}`);*/
     res.send(visita);
     await visita.save();
   } catch (err) {
