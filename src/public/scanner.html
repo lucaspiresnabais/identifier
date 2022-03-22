@@ -7,28 +7,12 @@
       <meta name="description" content="" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="stylesheet" href="" />
-      <link
-        rel="icon"
-        type="image/svg+xml"
-        href="https://example.com/image.svg"
-      />
       <script type="module" src="qr-scanner.min.js"></script>
       <script type="module" src="qr-scanner-worker.min.js"></script>
-      <script>
-        function myFunction() {
-          document.getElementById("demo").innerHTML = "YOU CLICKED ME!";
-          qr2();
-        }
-      </script>
+      <script type="module" src="scanner.js"></script>
     </head>
     <body>
-      <script>
-        function myFunction() {
-          document.getElementById("demo").innerHTML = "YOU CLICKED ME!";
-        }
-      </script>
-
-      <script type="module" src="scanner.js"></script>
+      <h3>'Scanee el QR del destinatario'</h3>
       <video width="100%" height="100%" id="scanner"></video>
     </body>
   </html>

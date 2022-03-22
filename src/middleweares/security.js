@@ -6,6 +6,7 @@ const Users = mongoose.model("Users");
 module.exports.validaautorizacion = async (req, res, next) => {
   const { ente, user, password } = req.body;
   console.log("SEEEECUUURIITTYYY", user, password, ente);
+  console.log(JSON.stringify(req.headers));
   const wuser = await Users.findOne({ user: user })
     .populate("roles")
     .populate("codEnte");

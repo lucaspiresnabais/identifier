@@ -5,6 +5,9 @@ const visitaSchema = new mongoose.Schema(
     idVisitador: {
       type: String,
     },
+    idReceptor: {
+      type: String,
+    },
     mailVisitador: {
       type: String,
     },
@@ -32,6 +35,22 @@ const visitaSchema = new mongoose.Schema(
     estado: {
       type: String,
     },
+    qrpaquete: {
+      type: String,
+    },
+    cbpaquete: {
+      type: String,
+    },
+    enteid: {
+      ref: "entes",
+      type: mongoose.Schema.Types.ObjectId,
+    },
+    datosmsg: [
+      {
+        clave: String,
+        valor: String,
+      },
+    ],
   },
   {
     timestamps: {

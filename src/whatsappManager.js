@@ -1,30 +1,38 @@
-const { Client } = require("whatsapp-web.js");
+const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const session_path = "./src/helpers/session.json";
 const fs = require("fs");
-
 let client;
 let sessionData;
-
 const con_session = () => {
   sessionData = fs.readFileSync(session_path);
   sessionData = JSON.parse(sessionData);
   console.log(sessionData, "*****************************");
-  client = new Client({ session: sessionData });
+  client = new Client({
+    authStrategy: new LegacySessionAuth({
+      session: sessionData,
+    }),
+  });
   console.log("Creando cliente Whatsapp");
-
-  client.on("disconnected", () => {
+  client.on("disconnected", async () => {
     console.log(
       "me desconecte del Wapp, seguramente lo estan usando en otro dispisitivo"
     );
+    await sleep(10000);
+    client.initialize();
   });
 
   client.on("ready", () => {
     console.log("Whats App ready!!");
+    reiniciar();
     escucharMsg();
   });
 
   client.initialize();
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 };
 
 const sin_session = () => {
@@ -41,7 +49,9 @@ const sin_session = () => {
     console.log("Whats App ready!!");
   });
   client.on("authenticated", (session) => {
+    console.log(session);
     sessionData = session;
+
     fs.writeFile(session_path, JSON.stringify(session), (err) => {
       if (err) console.log("error en wapp autenthicated");
     });
@@ -51,7 +61,30 @@ const sin_session = () => {
 };
 
 module.exports.iniciarWhatsappBot = () => {
-  fs.existsSync(session_path) ? con_session() : sin_session();
+  client = new Client({
+    authStrategy: new LocalAuth({
+      clientID: "Cliente1",
+      dataPath: "./.wwebjs_auth",
+    }),
+  });
+  client.on("ready", () => {
+    console.log("ready!!");
+  });
+  client.initialize();
+
+  client.on("qr", (qr) => {
+    qrcode.generate(qr, {
+      small: true,
+    });
+  });
+
+  client.on("disconnected", async () => {
+    console.log(
+      "me desconecte del Wapp, seguramente lo estan usando en otro dispisitivo"
+    );
+    await sleep(10000);
+    client.initialize();
+  });
 };
 
 const escucharMsg = () => {
@@ -62,11 +95,11 @@ const escucharMsg = () => {
   });
 };
 
-module.exports.enviarMsgVisita = (to, message) => {
-  console.log("********************", to, message);
+module.exports.enviarMsgVisita = (to, message, caption) => {
+  console.log("********************", to, message, caption);
 
   /* client.initialize(); */
-  client.sendMessage(to, message);
+  client.sendMessage(to, message, { caption: caption });
   if (message.mimetype == "image/jpg") {
     qrcode.generate(message.filename, {
       small: true,

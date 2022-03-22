@@ -1,6 +1,7 @@
 require("../models/Modelos");
 const mongoose = require("mongoose");
 const Visita = mongoose.model("Visita");
+const Param = mongoose.model("Parametria");
 const mailManager = require("../helpers/mailManager");
 const qrManager = require("../helpers/qrManager");
 const dotenv = require("dotenv");
@@ -21,6 +22,7 @@ const getVisita = async (req, res) => {
 
 const addVisita = async (req, res) => {
   const {
+    idReceptor,
     idVisitador,
     mailVisitador,
     mailReceptor,
@@ -30,6 +32,8 @@ const addVisita = async (req, res) => {
     nombre,
     diaHoraDesde,
     diaHoraHasta,
+    enteid,
+    datosmsg,
   } = req.body;
 
   /* const valida = await validaautorizacion(user, password, ente);
@@ -54,6 +58,7 @@ const addVisita = async (req, res) => {
 
   try {
     const visita = new Visita({
+      idReceptor,
       idVisitador,
       mailVisitador,
       whatsapp,
@@ -64,9 +69,20 @@ const addVisita = async (req, res) => {
       diaHoraHasta,
       estado,
       mailReceptor,
+      enteid,
+      datosmsg,
     });
+
     await visita.save();
 
+    console.log(enteid);
+    const param = await Param.findOne({ entex: enteid });
+
+    var textoFinal = param.textoWapp;
+    datosmsg.forEach(
+      (element) =>
+        (textoFinal = textoFinal.replace(element.clave, element.valor))
+    );
     await mailManager.sendMail({ link }, mailReceptor);
 
     let responseMessage = `Se ha agregado la visita: ${visita} 
@@ -77,14 +93,13 @@ const addVisita = async (req, res) => {
 
     const qrData = await qrManager.saveQR(data);
 
-    let whatsappdestino = "";
-    whatsappdestino = whatsapp.slice(1);
+    let whatsappdestino = whatsapp.slice(1);
     if (whatsappdestino.length > 8) {
       const ext = "@c.us";
       whatsappdestino = whatsappdestino + ext;
       const whatsappMessage = qrData[1];
 
-      enviarMsgVisita(whatsappdestino.toString(), whatsappMessage);
+      enviarMsgVisita(whatsappdestino.toString(), whatsappMessage, textoFinal);
 
       /*enviarMsgVisita("5491155701153-1587230635@g.us", whatsappMessage);*/
     }
@@ -96,51 +111,5 @@ const addVisita = async (req, res) => {
   }
 };
 /*}  else res.status(422).send({ error: valida });*/
-/* 
 
-   VALIDACION DE VISITA
-
- */
-const validateVisita = async (req, res) => {
-  const { data } = req.body;
-  /* const { idVisita } = req.params; */
-  const idVisita = data.split(":")[0];
-  const idVisitador = data.split(":")[1];
-  console.log(idVisita, idVisitador);
-  if (!idVisitador) {
-    return res.status(400).send({ error: "El idVisitador es obligatorio" });
-  }
-
-  try {
-    const visita = await Visita.findById(idVisita);
-
-    if (!visita) {
-      const message = "Visita no encontrada";
-      console.log(message);
-      return res.status(404).send({ error: message });
-    }
-
-    console.log(visita.idVisitador, visita.estado);
-    if (!visita.idVisitador || visita.estado !== "Habilitado") {
-      const message = `La visita no está en estado "Habilitado" o no tiene idVisitador`;
-      console.log(message);
-      return res.status(422).send({ error: message });
-    }
-
-    if (visita.idVisitador != idVisitador) {
-      const message = "El visitador no es el indicado!";
-      console.log(message);
-      return res.status(400).send({ error: message });
-    }
-
-    visita.estado = "Habilitado"; /* ara probar, luego: ejecutado */
-    /* visita.geo = geo; */
-    res.send(visita);
-    await visita.save();
-  } catch (err) {
-    console.log(err);
-    res.status(422).send({ error: "An error has occurred" });
-  }
-};
-
-module.exports = { getVisita, addVisita, validateVisita };
+module.exports = { getVisita, addVisita };

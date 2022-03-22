@@ -76,7 +76,7 @@ async function poblar(callback) {
   const parametria = new Parametria({
     entex: entex._id,
     textoWapp:
-      "Hola, le estamos enviando un QR para que muestre al repatidor al momento de la entrega de SUPRODUCTO",
+      "Hola, te estamos enviando este QR para que le muestres al repartidor al momento de entregarte &entrega que te llevaremos por tu compra en &origen.",
   });
   parametria.entex = entex._id;
   await parametria.save();
