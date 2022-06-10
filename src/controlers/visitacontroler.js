@@ -2,6 +2,7 @@ require("../models/Modelos");
 const mongoose = require("mongoose");
 const Visita = mongoose.model("Visita");
 const Param = mongoose.model("Parametria");
+const Entes = mongoose.model("Entes");
 const mailManager = require("../helpers/mailManager");
 const qrManager = require("../helpers/qrManager");
 const dotenv = require("dotenv");
@@ -32,7 +33,7 @@ const addVisita = async (req, res) => {
     nombre,
     diaHoraDesde,
     diaHoraHasta,
-    enteid,
+    ente,
     datosmsg,
   } = req.body;
 
@@ -69,14 +70,15 @@ const addVisita = async (req, res) => {
       diaHoraHasta,
       estado,
       mailReceptor,
-      enteid,
+      ente,
       datosmsg,
     });
 
     await visita.save();
 
-    console.log(enteid);
-    const param = await Param.findOne({ entex: enteid });
+    const wente = await Entes.findOne({ ente: ente });
+    console.log("*********", wente._id);
+    const param = await Param.findOne({ entex: wente._id });
 
     var textoFinal = param.textoWapp;
     datosmsg.forEach(

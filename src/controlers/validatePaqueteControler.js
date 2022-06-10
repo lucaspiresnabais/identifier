@@ -4,8 +4,9 @@ const Visita = mongoose.model("Visita");
 const qrManager = require("../helpers/qrManager");
 const dotenv = require("dotenv");
 const { validaautorizacion } = require("../helpers/database");
+const { appendFile } = require("fs");
 dotenv.config();
-
+/*node appendFile.js*/
 const validatePaquete = async (req, res) => {
   const { data } = req.body;
   /* const { idVisita } = req.params; */
