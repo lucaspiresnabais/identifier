@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const Visita = mongoose.model("Visita");
 const qrManager = require("../helpers/qrManager");
 const dotenv = require("dotenv");
-const { validaautorizacion } = require("../helpers/database");
 const { appendFile } = require("fs");
 dotenv.config();
 /*node appendFile.js*/
@@ -12,7 +11,6 @@ const validatePaquete = async (req, res) => {
   /* const { idVisita } = req.params; */
   const idVisita = data.split(":")[0];
   const paqueteLeido = data.split(":")[1];
-  console.log("validatePaquete", idVisita, paqueteLeido);
 
   try {
     const visita = await Visita.findById(idVisita);
@@ -22,10 +20,16 @@ const validatePaquete = async (req, res) => {
       console.log(message);
       return res.status(404).send({ error: message });
     }
-    console.log("linea 24 ", visita.qrpaquete, paqueteLeido);
+
     if (visita.qrpaquete !== paqueteLeido) {
       const message = `El paquete no corresponde a esta visita`;
-      console.log(message);
+      console.log(
+        message,
+        "visita.qrpaquete:",
+        visita.qrpaquete,
+        "paqueteleido:",
+        paqueteLeido
+      );
       return res.status(422).send({ error: message });
     }
 

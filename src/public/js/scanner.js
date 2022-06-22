@@ -13,19 +13,22 @@ const qrScanner = new QrScanner(
   },
   (error) => console.log(error)
 );
-/* const host = `https://d76d-190-191-103-88.ngrok.io`; */
+/**const host = `https://7a95-190-191-103-88.ngrok.io`;*/
 
-const host = `http://localhost:3000`;
+const host = "https://mpnservers.pagekite.me";
 
 await qrScanner.start();
 
 async function patchData(data) {
   const idVisita = data;
-  data = data + ":2312132132133213";
-  /* const idVisitador = "12324424434324";*/
+  //Creamos la instancia
+  const urlParams = new URLSearchParams(window.location.search);
 
-  const url = `${host}/validateVisita/${idVisita}`;
-  console.log(url);
+  //Accedemos a los valores
+  const idVisitador = urlParams.get("idv");
+
+  const url = `${host}/validateVisita`;
+  console.log(idVisitador);
   console.log(data);
   let response;
 
@@ -34,23 +37,26 @@ async function patchData(data) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ data }),
+    body: JSON.stringify({ idVisita, idVisitador }),
   });
+  console.log(JSON.stringify({ data }), idVisita, response);
 
   const respuesta = await response.json();
   console.log(idVisita, respuesta);
   if (response.ok) {
-    document.body.innerHTML = `<h1>Aprobado</h1> <p> <h2>Entregar pedido</h2><p><h3>${respuesta.nombre}</h3> 
-    <button onclick="scan20('${idVisita}')"> Scannear el paquete </button>
+    document.body.innerHTML = `<div>
+    <h3 style="margin: 10px">A P R O B A D O</h3>
+  </div> <p> <h2 style="
+  margin: 25px" >Entregar pedido</h2><p><h3 style="
+  margin: 25px">Destinatario: ${respuesta.nombre}</h3> 
+    <button onclick="scan20('${idVisita}')" > Quiero Scannear el paquete </button>
     <a href=""${host}/pages/scanner""><br>
-    <br>
-    <br>
-    <button>Entregado-Sacanear QR para otra entrega</button>
+    <button >Lo entregué- Quiero Sacanear QR para otra entrega</button>
   </a>
     <video width="100%" height="100%" id="scanner2"></video>
           `;
   } else {
-    document.body.innerHTML = `<h1>Rechazado</h1> <p> <h2>No entregar</h2><p><h3>${respuesta.error}</h3>  
+    document.body.innerHTML = `<h1 class="error">Rechazado</h1> <p> <h2 class="error"> No entregar</h2><p><h3>${respuesta.error}</h3>  
     <a href=""${host}/pages/scanner"">
     <button>Scannear otro</button>
   </a>`;
@@ -58,14 +64,14 @@ async function patchData(data) {
 }
 
 function scan20(visita) {
-  console.log("linea 57", visita);
-  document.body.innerHTML = `<h3>'Scanee el paquete'</h3> <video width="100%" height="100%" id="scanner2" playsinline="" disablepictureinpicture="" style="transform: scaleX(-1);"></video>`;
+  document.body.innerHTML = `<div>
+  <h3 style="margin: 10px">Simplemente Scanee el paquete</h3>
+</div> <video width="100%" height="100%" id="scanner2" playsinline="" disablepictureinpicture="" style="transform: scaleX(-1);"></video>`;
   const videoElem = document.getElementById("scanner2");
 
   const qrScanner2 = new QrScanner(
     videoElem,
     async (result) => {
-      console.log("linea 59", result);
       await patchData2(result, visita);
       qrScanner2.stop();
     },
@@ -74,6 +80,7 @@ function scan20(visita) {
   qrScanner2.start();
   /*   qrScanner2.stop(); */
 }
+
 async function patchData2(data, visita) {
   const idpaquete = data;
 
@@ -101,21 +108,23 @@ async function patchData2(data, visita) {
   /* const respuesta = await response.json();
    console.log(respuesta);*/
   if (response.ok) {
-    document.body.innerHTML = `<h1>Perfecta la entrega</h1> <p> <h2>Entregar pedido</h2><p>
+    document.body.innerHTML = `<h1 style="
+    margin: 25px" >Perfecta la entrega</h1> <p> <h2>Entregar pedido</h2><p>
     <a href=""${host}/pages/scanner"">
-    <button> Comenzar nueva entrega</button>
+    <button > Comenzar nueva entrega</button>
   </a>
           `;
   } else {
-    document.body.innerHTML = `<h1>Rechazado</h1> <p> <h2>No entregar</h2><p>  
+    document.body.innerHTML = `<div style="
+    margin: 25px"><h1 class="error">Rechazado</h1> <p> <h2 class="error">No entregar, el paquete no está aosciado a la entrega</h2><p>  
     <a href=""${host}/pages/scanner"">  
-    <button>Comenzar nueva entrega</button>
+    <button >Comenzar nueva entrega</button>
       </a>
       <br>
       <br>
       <br>
 
-      <button onclick="scan20('${visita}')"> Scannear nuevamente un paquete </button>`;
+      <button onclick="scan20('${visita}')"> Scannear nuevamente un paquete </button><dDiv>`;
   }
 }
 

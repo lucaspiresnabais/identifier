@@ -1,4 +1,5 @@
 const express = require("express");
+var cors = require("cors");
 const path = require("path");
 const morgan = require("morgan");
 const visitaRoutes = require("./routes/visitaRoutes");
@@ -8,7 +9,7 @@ const app = express();
 
 var favicon = require("serve-favicon");
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
-
+app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.static(path.join(__dirname + "public")));

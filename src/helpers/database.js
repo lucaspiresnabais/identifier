@@ -3,8 +3,11 @@ const mongoose = require("mongoose");
 const Entes = mongoose.model("Entes");
 const Users = mongoose.model("Users");
 
+/** Este js quedo sin uso al incorporar security
+ *
+ */
+
 module.exports.validaautorizacion = async (user, password, ente) => {
-  console.log(user, password, ente);
   const wuser = await Users.findOne({ user: user })
     .populate("roles")
     .populate("codEnte");

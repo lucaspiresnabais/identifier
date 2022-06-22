@@ -35,6 +35,10 @@ const visitaSchema = new mongoose.Schema(
     estado: {
       type: String,
     },
+    ejecutado: {
+      type: String,
+    },
+
     qrpaquete: {
       type: String,
     },
@@ -45,12 +49,7 @@ const visitaSchema = new mongoose.Schema(
       ref: "entes",
       type: mongoose.Schema.Types.ObjectId,
     },
-    datosmsg: [
-      {
-        clave: String,
-        valor: String,
-      },
-    ],
+    datosmsg: [{ _id: false, clave: String, valor: String }],
   },
   {
     timestamps: {
@@ -118,6 +117,7 @@ const users = new mongoose.Schema(
   {
     user: { type: String, unique: true },
     password: { type: String, require: true },
+    apiKey: { type: String, require: true },
 
     codEnte: {
       ref: "Entes",
@@ -149,8 +149,33 @@ const roles = new mongoose.Schema({
   rol: { type: String, unique: true },
 });
 
+const logVisitas = new mongoose.Schema(
+  {
+    user: { type: String },
+    idVisitador: {
+      type: String,
+    },
+    qrLeido: {
+      type: String,
+    },
+    resultado: {
+      type: String,
+    },
+    dateCaptura: {
+      type: Date,
+    },
+  },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+  }
+);
+
 mongoose.model("Visita", visitaSchema);
 mongoose.model("Parametria", parametria);
 mongoose.model("Users", users);
 mongoose.model("Entes", entes);
 mongoose.model("Roles", roles);
+mongoose.model("LogVisitas", logVisitas);

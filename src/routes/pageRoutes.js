@@ -5,6 +5,9 @@ const path = require("path");
 router.get("/pages/scanner", (req, res) => {
   res.sendFile(path.join(__dirname + "/../public/scanner.html"));
 });
+router.get("/pages/styles.css", (req, res) => {
+  res.sendFile(path.join(__dirname + "/../public/js/styles.css"));
+});
 
 router.get("/pages/scanner.js", (req, res) => {
   res.sendFile(path.join(__dirname + "/../public/js/scanner.js"));

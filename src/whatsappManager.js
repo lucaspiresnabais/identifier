@@ -98,7 +98,8 @@ const escucharMsg = () => {
 module.exports.enviarMsgVisita = (to, message, caption) => {
   console.log("********************", to, message, caption);
 
-  /* client.initialize(); */
+  
+  client.initialize();
   client.sendMessage(to, message, { caption: caption });
   if (message.mimetype == "image/jpg") {
     qrcode.generate(message.filename, {

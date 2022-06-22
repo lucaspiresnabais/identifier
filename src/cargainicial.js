@@ -7,6 +7,7 @@ const Roles = mongoose.model("Roles");
 const mongoUri = "mongodb://0.0.0.0:27017/pruebampn1";
 const util = require("util");
 const sleep = util.promisify(setTimeout);
+const generateApiKey = require("generate-api-key");
 
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
@@ -53,9 +54,11 @@ async function poblar(callback) {
   const entex = await Entes.findOne({ ente: "Ente1" });
   let rolx = await Roles.findOne({ rol: "Admin" });
 
+  let aapiKey = generateApiKey({ method: "string", length: 30 });
   let user = new Users({
     user: "Admin1",
     password: "1234",
+    apiKey: aapiKey,
     codEnte: entex,
     roles: rolx,
   });
@@ -63,9 +66,12 @@ async function poblar(callback) {
   console.log("creo el user", user);
 
   rolx = await Roles.findOne({ rol: "Visitador" });
+
+  let vapiKey = generateApiKey({ method: "string", length: 30 });
   user = new Users({
     user: "Visitador1",
     password: "1234",
+    apiKey: vapiKey,
     codEnte: entex,
     roles: rolx,
   });
